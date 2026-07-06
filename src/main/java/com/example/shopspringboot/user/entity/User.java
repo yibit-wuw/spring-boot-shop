@@ -11,10 +11,10 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(nullable = false, unique = true) // 帳號不能重複
     private String username;
-
     @Column(nullable = false)
     private String password; // 這裡將來會存加密後的密碼（密文），絕對不存明文
+    @Column(nullable = false, unique = true)
+    private String email;
 }
