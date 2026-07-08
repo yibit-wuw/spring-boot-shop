@@ -19,7 +19,7 @@ public class UserService {
     private final JwtTokenService jwtTokenService;
     // 建立 BCryptPasswordEncoder 物件
     // 用來將密碼加密(Hash)以及驗證密碼
-    // 例如：
+
     // encode("123456") → "$2a$10$..."
     // matches("123456", 加密後密碼) → true
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();

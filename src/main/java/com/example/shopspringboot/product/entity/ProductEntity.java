@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "product")
 @Data // Lombok 註解：自動幫你生成所有 Getter, Setter 和 toString
-public class Product {
+public class ProductEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // 主鍵自動遞增
     private Long id;

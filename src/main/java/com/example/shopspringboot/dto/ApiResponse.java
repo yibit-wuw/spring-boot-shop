@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 // 宣告一個泛型(Generic)類別
 // <T> 代表 data 可以存放任何型別
-// 例如：String、User、LoginResponse、List<Product>...
+// 例如：String、User、LoginResponse、List<ProductEntity>...
 public class ApiResponse<T> {
     // API 是否成功
     // true = 成功
