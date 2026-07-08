@@ -61,8 +61,7 @@ public class AuthController {
                     loginRequest.getUsername());
             // 回傳 HTTP 200 OK
             // ApiResponse.success() 建立成功格式
-            return ResponseEntity.ok(
-                    ApiResponse.success("登入成功", loginResponse));
+            return ResponseEntity.ok(ApiResponse.success("登入成功", loginResponse));
         } catch (RuntimeException e) {
             // 如果登入失敗（帳號或密碼錯誤）
             // 回傳 HTTP 401 Unauthorized
