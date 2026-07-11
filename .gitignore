@@ -1,27 +1,35 @@
-.gradle
-**/build/
-!**/src/**/build/
-
+# ===================================================================
+# 專案核心敏感檔案 (最重要！)
+# ===================================================================
 /src/main/resources/application.properties
+/uploads/
 
-# Ignore Gradle GUI config
-gradle-app.setting
-
-# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
-!gradle-wrapper.jar
-
-# Avoid ignore Gradle wrapper properties
-!gradle-wrapper.properties
-
-# Cache of project
-.gradletasknamecache
-
-# Eclipse Gradle plugin generated files
-.project
-.classpath
-
-# IntelliJ IDEA
+# ===================================================================
+# 作業系統與開發工具暫存
+# ===================================================================
+.DS_Store
+Thumbs.db
 .idea/
 *.iml
 *.iws
 *.ipr
+.project
+.classpath
+.settings/
+
+# ===================================================================
+# 建置與編譯產物 (Gradle & Maven)
+# ===================================================================
+/build/
+**/build/
+/target/
+**/target/
+.gradle/
+.gradletasknamecache
+
+# ===================================================================
+# Gradle Wrapper 確保不被忽略 (保留這段可讓其他人直接執行 ./gradlew)
+# ===================================================================
+gradle-app.setting
+!gradle-wrapper.jar
+!gradle-wrapper.properties
