@@ -17,6 +17,7 @@ public class ProductRequest {
     @NotNull(message = "商品庫存不能為空")
     @Min(value = 0, message = "商品庫存不能小於 0")
     private Integer stock;
-
-    // 💡 提示：上架時通常預設就是上架狀態（例如 status = "ACTIVE"），所以不用讓前端傳傳狀態。
+    // 💡 新增這一行：用來接收前端上傳圖片成功後回傳的圖片網址路徑
+    private String imageUrl;
+    // 💡 提示：上架時通常預設就是上架狀態（例如 status = "ACTIVE"），所以不用讓前端傳狀態。
 }

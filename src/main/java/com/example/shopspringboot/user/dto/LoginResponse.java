@@ -25,10 +25,7 @@ import lombok.NoArgsConstructor;
 // public LoginResponse(String token, String username){...}
 @AllArgsConstructor
 public class LoginResponse {
-    // JWT Token
-    // 登入成功後會回傳給前端，用來之後存取需要登入驗證的 API
     private String token;
-    // 登入者的帳號
-    // 回傳給前端方便顯示目前登入的是哪位使用者
     private String username;
+    private String role;
 }

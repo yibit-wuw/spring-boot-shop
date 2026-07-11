@@ -4,6 +4,7 @@ import com.example.shopspringboot.cart.dto.AddToCartRequest;
 import com.example.shopspringboot.cart.dto.CartResponse;
 import com.example.shopspringboot.cart.service.CartService;
 import com.example.shopspringboot.dto.ApiResponse;
+import com.example.shopspringboot.user.service.UserService; // 💡 1. 引入 UserService
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,38 +14,37 @@ import java.util.List;
 @RequestMapping("/api/cart")
 public class CartController {
     private final CartService cartService;
-    public CartController(CartService cartService) {
+    private final UserService userService; // 💡 2. 宣告 UserService
+    // 💡 3. 透過建構子將兩個 Service 一起注入進來
+    public CartController(CartService cartService, UserService userService) {
         this.cartService = cartService;
+        this.userService = userService;
     }
     // 處理「加入購物車」的 POST 請求
     @PostMapping
     public ApiResponse<Void> addToCart(@Valid @RequestBody AddToCartRequest request) {
-        // 這裡暫時先寫死 userId = 1L（等串接 JWT Filter 後就能動態獲取）
-        Long mockUserId = 1L;
-        // 1. 【呼叫 Service】把資料傳給內廚執行（你寫得完全正確！）
-        cartService.addToCart(mockUserId, request.getProductId(), request.getQuantity());
-        // 2. 【回傳結果】直接 return 成功的回應格式給前端
+        // 💡 4. 拔掉死資料，改從 JWT 憑證動態解析出當前用戶 ID
+        Long userId = userService.getCurrentUserId();
+        // 將動態 ID 傳給 Service 執行
+        cartService.addToCart(userId, request.getProductId(), request.getQuantity());
         return ApiResponse.success("成功加入購物車");
     }
+    // 處理「查詢購物車」的 GET 請求
     @GetMapping
     public ApiResponse<List<CartResponse>> getCart() {
-        // 依然先寫死模擬的使用者 ID
-        Long mockUserId = 1L;
-        // 1. 【呼叫 Service】拿著 mockUserId 去叫內廚把整袋 DTO 列表拿過來
-        // 呼叫 Service 的查詢方法，並用一個 List<CartResponse> 變數接住回傳值（你寫得超棒！）
-        List<CartResponse> responseList = cartService.getCartByUserId(mockUserId);
-        // 2. 【回傳結果】把這袋資料和成功訊息用 ApiResponse 包起來，直接 return 給前端
-        // 把原本的 null 拿掉，這樣就完全符合 Java 語法了！
+        // 💡 5. 動態獲取登入者的 ID
+        Long userId = userService.getCurrentUserId();
+        // 拿著當前用戶的 ID 去撈他個人的購物車內容
+        List<CartResponse> responseList = cartService.getCartByUserId(userId);
         return ApiResponse.success("查詢成功", responseList);
     }
     // 處理「移出購物車」的 DELETE 請求
     @DeleteMapping("/{productId}")
     public ApiResponse<Void> removeFromCart(@PathVariable Long productId) {
-        // 依然先寫死模擬的使用者 ID
-        Long mockUserId = 1L;
-        // 1. 【呼叫 Service】叫內廚執行刪除
-        cartService.removeFromCart(mockUserId, productId);
-        // 2. 【回傳結果】回傳 ApiResponse.success("成功移出購物車")
+        // 💡 6. 動態獲取登入者的 ID（順便把原本混進來的訂單邏輯清乾淨了！）
+        Long userId = userService.getCurrentUserId();
+        // 叫 Service 把該用戶購物車裡的特定商品移除
+        cartService.removeFromCart(userId, productId);
         return ApiResponse.success("成功移出購物車");
     }
 }

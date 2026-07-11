@@ -8,8 +8,8 @@ import com.example.shopspringboot.user.dto.LoginRequest;
 import com.example.shopspringboot.user.dto.LoginResponse;
 // 匯入註冊請求 DTO（接收前端註冊資料）
 import com.example.shopspringboot.user.dto.RegisterRequest;
-// 匯入 User 實體(Entity)，代表資料庫的 users 資料
-import com.example.shopspringboot.user.entity.User;
+// 匯入 UserEntity 實體(Entity)，代表資料庫的 users 資料
+import com.example.shopspringboot.user.entity.UserEntity;
 // 匯入 UserService，負責處理使用者相關商業邏輯
 import com.example.shopspringboot.user.service.UserService;
 // 匯入 Jakarta Validation，用來驗證 DTO 是否符合規則（例如 @NotBlank）
@@ -19,18 +19,18 @@ import org.springframework.http.HttpStatus;
 // 匯入 ResponseEntity，可以自訂 HTTP 狀態碼及回傳內容
 import org.springframework.http.ResponseEntity;
 // 匯入 PostMapping，表示此方法處理 POST 請求
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 // 匯入 RequestBody，表示接收 Request Body 的 JSON 資料
-import org.springframework.web.bind.annotation.RequestBody;
 // 匯入 RequestMapping，設定 Controller 的共同路徑
-import org.springframework.web.bind.annotation.RequestMapping;
 // 匯入 RestController，表示此類別是一個 REST API Controller
-import org.springframework.web.bind.annotation.RestController;
+
 // 宣告這是一個 REST Controller，所有方法都會直接回傳 JSON
+
 @RestController
 // 設定此 Controller 的共同網址路徑
 // 所有 API 都會以 /api/auth 開頭
 @RequestMapping("/api/auth")
+@CrossOrigin(origins = "*")
 public class AuthController {
     // 宣告 UserService 物件
     // final 表示建立後不能再被修改
@@ -55,10 +55,11 @@ public class AuthController {
             String token = userService.login(
                     loginRequest.getUsername(),
                     loginRequest.getPassword());
-            // 建立登入成功回傳物件
+            String role = userService.getUserRole(loginRequest.getUsername()).name();
             LoginResponse loginResponse = new LoginResponse(
                     token,
-                    loginRequest.getUsername());
+                    loginRequest.getUsername(),
+                    role);
             // 回傳 HTTP 200 OK
             // ApiResponse.success() 建立成功格式
             return ResponseEntity.ok(ApiResponse.success("登入成功", loginResponse));
@@ -78,17 +79,17 @@ public class AuthController {
             @Valid @RequestBody RegisterRequest registerRequest) {
         // 使用 try-catch 處理註冊錯誤
         try {
-            // 建立新的 User Entity
-            User user = new User();
-            // 將 DTO 的 username 放到 User Entity
-            user.setUsername(registerRequest.getUsername());
-            // 將 DTO 的 password 放到 User Entity
-            user.setPassword(registerRequest.getPassword());
-            // 將 DTO 的 email 放到 User Entity
-            user.setEmail(registerRequest.getEmail());
+            // 建立新的 UserEntity Entity
+            UserEntity userEntity = new UserEntity();
+            // 將 DTO 的 username 放到 UserEntity Entity
+            userEntity.setUsername(registerRequest.getUsername());
+            // 將 DTO 的 password 放到 UserEntity Entity
+            userEntity.setPassword(registerRequest.getPassword());
+            // 將 DTO 的 email 放到 UserEntity Entity
+            userEntity.setEmail(registerRequest.getEmail());
             // 呼叫 Service 進行註冊
             // Service 裡通常會檢查帳號是否重複、密碼加密、存入資料庫
-            userService.register(user);
+            userService.register(userEntity);
             // 註冊成功
             // 回傳 HTTP 200
             return ResponseEntity.ok(

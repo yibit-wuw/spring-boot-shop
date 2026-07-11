@@ -1,23 +1,51 @@
 package com.example.shopspringboot.exception;
 
 import com.example.shopspringboot.dto.ApiResponse;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.stream.Collectors;
+
+/**
+ * 全域例外處理器
+ *
+ * 使用 @RestControllerAdvice 攔截 Controller 中拋出的例外，
+ * 統一回傳 ApiResponse，讓前端收到一致的 JSON 格式。
+ */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    // 1. 專門捕捉業務邏輯錯誤 (如：庫存不足、購物車空空的)
+    /**
+     * 處理業務邏輯錯誤
+     * 例如：
+     * throw new RuntimeException("商品不存在");
+     */
     @ExceptionHandler(RuntimeException.class)
     public ApiResponse<Void> handleRuntimeException(RuntimeException ex) {
-        String errorMessage = ex.getMessage();
-        return ApiResponse.error(errorMessage);
+        return ApiResponse.error(ex.getMessage());
     }
-    // 2. 專門捕捉 DTO 參數驗證失敗 (如：商品數量少於 1、ID 為空)
+    /**
+     * 處理 DTO 驗證失敗 (@Valid)
+     * 將所有驗證錯誤合併回傳。
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ApiResponse<Void> handleValidationException(MethodArgumentNotValidException ex) {
-        // 從錯誤對象中精準抽取出你寫在 DTO 上的 message 內容
-        String defaultMessage = ex.getBindingResult().getFieldError().getDefaultMessage();
-        return ApiResponse.error(defaultMessage);
+        String message = ex.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(FieldError::getDefaultMessage)
+                .collect(Collectors.joining("；"));
+        return ApiResponse.error(message);
+    }
+    /**
+     * 處理所有未預期例外
+     */
+    @ExceptionHandler(Exception.class)
+    public ApiResponse<Void> handleException(Exception ex) {
+
+        // 開發階段方便除錯
+        ex.printStackTrace();
+        return ApiResponse.error("系統發生未知錯誤，請稍後再試");
     }
 }
